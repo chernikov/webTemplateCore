@@ -1,13 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace webTemplate.Web.Api
+namespace webTemplate.DAL
 {
-    public class BaseController : Controller
+    public interface IBaseRepository
     {
         
     }

@@ -3,8 +3,12 @@ using webTemplate.Domain;
 
 namespace webTemplate.Data
 {
-    public class webTemplateDbContext : DbContext
+    public class webTemplateDbContext : DbContext, IwebTemplateDbContext
     {
+        public webTemplateDbContext(DbContextOptions options) : base(options)
+        {
+
+        }
         public DbSet<User> Users { get; set; }
 
         public DbSet<Role> Roles { get; set; }

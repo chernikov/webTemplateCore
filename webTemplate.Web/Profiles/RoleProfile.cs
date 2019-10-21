@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using webTemplate.Domain;
+using webTemplate.Web.Dto;
 
 namespace webTemplate.Web.Profiles
 {
