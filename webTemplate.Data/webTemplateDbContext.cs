@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
 using webTemplate.Domain;
 
 namespace webTemplate.Data
@@ -10,6 +11,9 @@ namespace webTemplate.Data
 
         static WebTemplateDbContext()
         {
+            DbContextLoggerFactory = new LoggerFactory();
+            DbContextLoggerFactory.AddConsole();
+            DbContextLoggerFactory.AddNLog();
         }
 
         public WebTemplateDbContext(DbContextOptions options) : base(options)
