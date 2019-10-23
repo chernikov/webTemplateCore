@@ -1,11 +1,7 @@
-﻿using System.Security.Principal;
-
-namespace webTemplate.Web.Services
+﻿namespace webTemplate.Web.Services
 {
     public interface IIdentityService
     {
-        void Save(IPrincipal principal);
-
-        IPrincipal Restore();
+        string Authenticate(string email, string password);
     }
 }

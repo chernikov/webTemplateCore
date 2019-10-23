@@ -1,16 +1,20 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using webTemplate.BL;
 using webTemplate.DAL;
 using webTemplate.Data;
+using webTemplate.Web.Helpers;
 using webTemplate.Web.Middlewares;
 using webTemplate.Web.Services;
 
@@ -39,6 +43,27 @@ namespace webTemplate.Web
                    opt.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
                });
 
+            // configure strongly typed settings objects
+            var appSettingsSection = Configuration.GetSection("AppSettings");
+            services.Configure<AppSettings>(appSettingsSection);
+
+            // configure jwt authentication
+            var appSettings = appSettingsSection.Get<AppSettings>();
+            var key = Encoding.ASCII.GetBytes(appSettings.Secret);
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+            });
+
             var configurationSection = Configuration.GetSection("ConnectionStrings:DefaultConnection");
             services.AddDbContext<WebTemplateDbContext>(options => options.UseSqlServer(configurationSection.Value));
             services.AddTransient<IWebTemplateDbContext, WebTemplateDbContext>();
@@ -62,6 +87,7 @@ namespace webTemplate.Web
             }
             app.UseRequestLog();
 
+            app.UseAuthentication();
             app.UseMvc();
         }
 

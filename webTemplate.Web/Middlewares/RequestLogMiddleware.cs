@@ -1,12 +1,12 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using webTemplate.BL;
-using webTemplate.Web.Services;
 
 namespace webTemplate.Web.Middlewares
 {
@@ -19,7 +19,7 @@ namespace webTemplate.Web.Middlewares
             _next = next;
         }
 
-        public async Task InvokeAsync(HttpContext context, IIdentityService identityService, IUserAuthBL userAuthBL, ILogger<RequestLogMiddleware> logger)
+        public async Task InvokeAsync(HttpContext context, ILogger<RequestLogMiddleware> logger)
         {
             if (logger.IsEnabled(LogLevel.Information))
             {
@@ -28,23 +28,24 @@ namespace webTemplate.Web.Middlewares
 
                 var total = (DateTime.Now.Ticks - startTime) / 10000;
                 var isError = (context.Response.StatusCode / 100) > 3;
-                var principal = identityService.Restore();
+
+                var authService = context.RequestServices.GetRequiredService<IAuthorizationService>();
                 var userInfo = string.Empty;
-                if (principal != null)
+                if (context.User.Identity.IsAuthenticated)
                 {
-                    var identity = (ClaimsIdentity)principal.Identity;
-                    var claimsList = identity.Claims.ToList();
-                    var sid = claimsList.FirstOrDefault(p => p.Type == ClaimTypes.Sid).Value;
-                    if (!string.IsNullOrEmpty(sid))
+                    var identity = context.User.Identity;
+                    if (identity is ClaimsIdentity)
                     {
-                        var id = Int32.Parse(sid);
-                        var user = userAuthBL.GetUserById(id);
-                        userInfo = string.Empty;
-                        if (user != null)
+                        var claimsList = ((ClaimsIdentity)identity).Claims.ToList();
+                        var sid = claimsList.FirstOrDefault(p => p.Type == ClaimTypes.Sid).Value;
+                        if (!string.IsNullOrEmpty(sid))
                         {
-                            var role = claimsList.FirstOrDefault(p => p.Type == ClaimTypes.Role).Value;
-                            var obj = new { user, role };
-                            userInfo = JsonConvert.SerializeObject(obj);
+                            var id = Int32.Parse(sid);
+                            var user = claimsList.FirstOrDefault(p => p.Type == "user")?.Value;
+                            if (user != null)
+                            {
+                                userInfo = JsonConvert.SerializeObject(user);
+                            }
                         }
                     }
                 }

@@ -14,13 +14,16 @@ namespace webTemplate.DAL
         }
 
         public User Get(int id)
-            => Execute(context => context.Users.FirstOrDefault(p => p.Id == id));
+            => Query(context => context.Users.FirstOrDefault(p => p.Id == id));
 
         public User GetByEmailAndPassword(string email, string password)
-            => Execute(context => context.Users.FirstOrDefault(p => p.Email == email && p.Password == password));
+            => Query(context =>
+                context.Users.Include(u => u.UserRoles)
+                .ThenInclude(ur => ur.Role)
+                .FirstOrDefault(p => p.Email == email && p.Password == password));
 
 
         public Task<User> GetUserByEmailAsync(string userEmail)
-            => Execute(context => context.Users.FirstOrDefaultAsync(p => p.Email == userEmail));
+            => Query(context => context.Users.FirstOrDefaultAsync(p => p.Email == userEmail));
     }
 }

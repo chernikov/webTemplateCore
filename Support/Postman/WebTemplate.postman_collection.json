@@ -1,0 +1,150 @@
+{
+	"info": {
+		"_postman_id": "a85ea378-9e98-487c-ba36-6acb91d3d7ab",
+		"name": "WebTemplate",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Roles",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/role",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"role"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Auth (admin)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "75f0eb7e-a8e5-46d1-9656-5b735c17439c",
+						"exec": [
+							"let json = pm.response.json();",
+							"pm.environment.set(\"jwt_token\", json.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Email\" : \"admin@webtemplate.net\",\n\t\"Password\" : \"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/auth",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Auth (user)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "75f0eb7e-a8e5-46d1-9656-5b735c17439c",
+						"exec": [
+							"let json = pm.response.json();",
+							"pm.environment.set(\"jwt_token\", json.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\t\"Email\" : \"user@webtemplate.net\",\n\t\"Password\" : \"123456\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/api/auth",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"auth"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[Auth: admin] Get User ",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/api/user",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"user"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}

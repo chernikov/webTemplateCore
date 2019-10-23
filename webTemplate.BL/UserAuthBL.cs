@@ -16,5 +16,10 @@ namespace webTemplate.BL
         {
             return userAuthRepository.Get(id);
         }
+
+        public User GetByEmailAndPassword(string email, string password)
+        {
+            return userAuthRepository.GetByEmailAndPassword(email, password);
+        }
     }
 }
