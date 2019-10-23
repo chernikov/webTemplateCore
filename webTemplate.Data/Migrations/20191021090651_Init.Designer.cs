@@ -8,7 +8,7 @@ using webTemplate.Data;
 
 namespace webTemplate.Data.Migrations
 {
-    [DbContext(typeof(webTemplateDbContext))]
+    [DbContext(typeof(WebTemplateDbContext))]
     [Migration("20191021090651_Init")]
     partial class Init
     {

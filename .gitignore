@@ -69,3 +69,4 @@ TestResults
 /Tools/plt4m.ParseLogs/Data
 .sonarqube/
 
+/webTemplate.Web/logs

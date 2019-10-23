@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using webTemplate.Data;
 using webTemplate.Domain;
 
@@ -10,14 +8,12 @@ namespace webTemplate.DAL
 {
     public class RoleRepository : BaseRepository, IRoleRepository
     {
-        public RoleRepository(webTemplateDbContext context) : base(context)
+        public RoleRepository(Func<IWebTemplateDbContext> getDbContext) : base(getDbContext)
         {
 
         }
 
-        public IList<Role> GetList()
-        {
-            return context.Roles.ToList();
-        }
+
+        public IList<Role> GetList() => Query((context) => context.Roles.ToList());
     }
 }

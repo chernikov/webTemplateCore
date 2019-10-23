@@ -1,14 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using webTemplate.Domain;
 
 namespace webTemplate.Data
 {
-    public class webTemplateDbContext : DbContext, IwebTemplateDbContext
+    public class WebTemplateDbContext : DbContext, IWebTemplateDbContext
     {
-        public webTemplateDbContext(DbContextOptions options) : base(options)
+        public static readonly ILoggerFactory DbContextLoggerFactory;
+
+        static WebTemplateDbContext()
+        {
+        }
+
+        public WebTemplateDbContext(DbContextOptions options) : base(options)
         {
 
         }
+
         public DbSet<User> Users { get; set; }
 
         public DbSet<Role> Roles { get; set; }
@@ -18,7 +26,8 @@ namespace webTemplate.Data
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
             options.UseSqlServer("Server=(local);Initial Catalog=webTemplate;Trusted_Connection=True;MultipleActiveResultSets=true");
-            //options.EnableSensitiveDataLogging(true);
+            options.UseLoggerFactory(DbContextLoggerFactory);
+            options.EnableSensitiveDataLogging(true);
             base.OnConfiguring(options);
         }
 

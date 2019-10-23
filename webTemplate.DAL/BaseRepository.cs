@@ -1,19 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using webTemplate.Data;
 
 namespace webTemplate.DAL
 {
     public class BaseRepository
     {
-        protected readonly webTemplateDbContext context;
 
-        public BaseRepository(webTemplateDbContext context)
+        private readonly Lazy<IWebTemplateDbContext> lazyContext;
+
+        private IWebTemplateDbContext context => lazyContext.Value;
+
+
+        protected readonly Func<IWebTemplateDbContext> getDbContext;
+
+        public BaseRepository(Func<IWebTemplateDbContext> getDbContext)
         {
-            this.context = context;
+            this.getDbContext = getDbContext;
+            lazyContext = new Lazy<IWebTemplateDbContext>(() => getDbContext());
+        }
+
+        protected T Execute<T>(Func<IWebTemplateDbContext, T> functor)
+        {
+            using (var dbContext = getDbContext())
+            {
+                return functor(dbContext);
+            }
+        }
+
+        protected T Query<T>(Func<IWebTemplateDbContext, T> functor)
+        {
+            return functor(context);
         }
     }
 }

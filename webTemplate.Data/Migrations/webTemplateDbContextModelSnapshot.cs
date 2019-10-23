@@ -7,7 +7,7 @@ using webTemplate.Data;
 
 namespace webTemplate.Data.Migrations
 {
-    [DbContext(typeof(webTemplateDbContext))]
+    [DbContext(typeof(WebTemplateDbContext))]
     partial class webTemplateDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

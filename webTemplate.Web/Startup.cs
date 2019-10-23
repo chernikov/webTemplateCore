@@ -11,6 +11,8 @@ using System.Reflection;
 using webTemplate.BL;
 using webTemplate.DAL;
 using webTemplate.Data;
+using webTemplate.Web.Middlewares;
+using webTemplate.Web.Services;
 
 namespace webTemplate.Web
 {
@@ -37,10 +39,13 @@ namespace webTemplate.Web
                    opt.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
                });
 
-            // In production, the Angular files will be served from this directory
             var configurationSection = Configuration.GetSection("ConnectionStrings:DefaultConnection");
-            services.AddDbContext<webTemplateDbContext>(options => options.UseSqlServer(configurationSection.Value));
-            services.AddScoped<IwebTemplateDbContext, webTemplateDbContext>();
+            services.AddDbContext<WebTemplateDbContext>(options => options.UseSqlServer(configurationSection.Value));
+            services.AddTransient<IWebTemplateDbContext, WebTemplateDbContext>();
+            services.AddScoped(provider =>
+                    new Func<IWebTemplateDbContext>(() => provider.GetService<IWebTemplateDbContext>())
+                );
+            services.AddScoped<IIdentityService, IdentityService>();
 
             RegisterBL(services);
             RegisterRepositories(services);
@@ -55,6 +60,7 @@ namespace webTemplate.Web
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseRequestLog();
 
             app.UseMvc();
         }

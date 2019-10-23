@@ -18,5 +18,11 @@ namespace webTemplate.Domain
         public string Password { get; set; }
 
         public ICollection<UserRole> UserRoles { get; set; }
+
+
+        public override string ToString()
+        {
+            return $"{Id} {Name} {Email}";
+        }
     }
 }
