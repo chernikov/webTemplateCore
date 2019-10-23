@@ -70,3 +70,4 @@ TestResults
 .sonarqube/
 
 /webTemplate.Web/logs
+/logs/2019-10-23

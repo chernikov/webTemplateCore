@@ -17,8 +17,16 @@
     },
     "webTemplate.Web": {
       "commandName": "Project",
-      "launchBrowser": true,
+      "launchBrowser": false,
       "applicationUrl": "http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+	"webTemplate.Web.Local": {
+      "commandName": "Project",
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:9999",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
