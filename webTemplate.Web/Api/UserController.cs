@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Claims;
+using System;
+using System.Collections.Generic;
+using System.Net;
+using webTemplate.Web.Dto;
 
 namespace webTemplate.Web.Api
 {
@@ -9,15 +12,23 @@ namespace webTemplate.Web.Api
     {
         [HttpGet]
         [Authorize(Roles = "admin")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(List<int>), (int)HttpStatusCode.OK)]
         public IActionResult Get()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier); // will give the user's userId
-            var userName = User.FindFirstValue(ClaimTypes.Name); // will give the user's userName
-            var userEmail = User.FindFirstValue(ClaimTypes.Email); // will give the user's Email
-
             var list = new[] { 1, 2, 3 };
             return Ok(list);
         }
 
+
+        [HttpPost]
+        [Authorize(Roles = "admin")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(List<HardClassDto.SubClassDto>), (int)HttpStatusCode.OK)]
+        public IActionResult Post([FromQuery] Guid guid, [FromBody] HardClassDto insert)
+        {
+            var list = new[] { 1, 2, 3 };
+            return Ok(list);
+        }
     }
 }
