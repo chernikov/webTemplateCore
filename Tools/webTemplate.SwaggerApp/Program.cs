@@ -16,6 +16,10 @@ namespace webTemplate.SwaggerApp
 
             var generator = new Generator(text);
 
+            generator.Parse();
+
+            var files = generator.Files;
+
 
         }
     }

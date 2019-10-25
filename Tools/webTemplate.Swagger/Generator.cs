@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using System.Collections.Generic;
+using webTemplate.Swagger.Output;
 using webTemplate.Swagger.Swagger;
 
 namespace webTemplate.Swagger
@@ -7,34 +9,32 @@ namespace webTemplate.Swagger
     {
         private readonly Document swaggerDoc;
 
+        public List<BaseFile> Files { get; set; } = new List<BaseFile>();
+
+
+        public List<BaseOutputClass> Classes { get; set; } = new List<BaseOutputClass>();
+
+
         public Generator(string source)
         {
             swaggerDoc = JsonConvert.DeserializeObject<Document>(source);
         }
 
-
-
-
         public void Parse()
         {
             ParseClasses();
-            ParseEnums();
             ParseServices();
         }
 
-        public void ParseClasses()
+        private void ParseClasses()
         {
+            var factory = new ClassFactory();
 
+            Classes = factory.GetClasses(swaggerDoc.Components);
         }
 
-        public void ParseEnums()
-        {
-
-        }
-
-        public void ParseServices()
+        private void ParseServices()
         {
         }
-
     }
 }

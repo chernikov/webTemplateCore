@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using webTemplate.Web.Dto.Enums;
 
 namespace webTemplate.Web.Dto
@@ -31,5 +32,19 @@ namespace webTemplate.Web.Dto
         public Dictionary<int, HardClassDto> DictClass { get; set; }
 
         public List<SubClassDto> List { get; set; }
+
+        public DateTime AddedDate { get; set; }
+
+        public double DoubleNumber { get; set; }
+
+        public long LongNumber { get; set; }
+
+        public byte[] ArrayOfBytes { get; set; }
+
+        public List<char> ListOfChars { get; set; }
+
+        public SortedList<string, float> SortedListOfFloat { get; set; }
+
+        public List<List<SubClassDto>> ArrayOfArraySubClass { get; set; }
     }
 }
