@@ -19,13 +19,18 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "webTemplate.ConsoleApp", "w
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{5517A2D3-47C5-4FCC-8508-52ADF6140491}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "webTemplate.Swagger", "Tools\webTemplate.Swagger\webTemplate.Swagger.csproj", "{3F5BAEDF-9E46-43F7-B974-91428AB8999F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "webTemplate.Swagger", "Tools\webTemplate.Swagger\webTemplate.Swagger.csproj", "{3F5BAEDF-9E46-43F7-B974-91428AB8999F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "webTemplate.SwaggerApp", "Tools\webTemplate.SwaggerApp\webTemplate.SwaggerApp.csproj", "{F695EB17-BAC1-4598-A7B7-4FDB767428DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "webTemplate.SwaggerApp", "Tools\webTemplate.SwaggerApp\webTemplate.SwaggerApp.csproj", "{F695EB17-BAC1-4598-A7B7-4FDB767428DF}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "data", "data", "{3BF37B95-E533-40C2-A8FE-604DFDED4829}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "webTemplate.Swagger.Tests", "Tools\webTemplate.Swagger.Tests\webTemplate.Swagger.Tests.csproj", "{75E8D382-6B32-415B-A80D-A95775EFB45B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "webTemplate.Swagger.Tests", "Tools\webTemplate.Swagger.Tests\webTemplate.Swagger.Tests.csproj", "{75E8D382-6B32-415B-A80D-A95775EFB45B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6E141BB7-FE7E-4F58-A27A-4618996A5BE2}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
