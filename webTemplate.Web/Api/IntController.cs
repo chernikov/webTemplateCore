@@ -15,17 +15,24 @@ namespace webTemplate.Web.Api
         }
 
 
+        //[HttpGet("{id:int}")]
+        //[Produces("application/json")]
+        //[ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
+        //public IActionResult Get(int id)
+        //{
+        //    return Ok(id);
+        //}
+
         [HttpGet("{id:int}")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
-        public IActionResult Get(int id)
+        public IActionResult Get(int id, int id2)
         {
             return Ok(id);
         }
 
 
         [HttpPost]
-        [Produces("application/json")]
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
         public IActionResult Post([FromBody] int i)
         {
@@ -33,7 +40,6 @@ namespace webTemplate.Web.Api
         }
 
         [HttpPut]
-        [Produces("application/json")]
         [ProducesResponseType(typeof(int), (int)HttpStatusCode.OK)]
         public IActionResult Put([FromBody] int i)
         {

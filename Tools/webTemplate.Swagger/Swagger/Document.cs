@@ -8,7 +8,7 @@ namespace webTemplate.Swagger.Swagger
 
         public DocumentInfo Info { get; set; }
 
-        public Dictionary<string, DocumentPath> Paths { get; set; }
+        public Dictionary<string, Dictionary<string, DocumentAction>> Paths { get; set; }
 
         public DocumentComponent Components { get; set; }
     }

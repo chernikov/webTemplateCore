@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
 using webTemplate.Swagger.Output;
 using webTemplate.Swagger.Swagger;
 
@@ -9,10 +10,16 @@ namespace webTemplate.Swagger
     {
         private readonly Document swaggerDoc;
 
-        public List<BaseFile> Files { get; set; } = new List<BaseFile>();
+        private List<BaseFile> Files { get; set; } = new List<BaseFile>();
 
+        private ClassFactory _classFactory = new ClassFactory();
 
-        public List<BaseOutputClass> Classes { get; set; } = new List<BaseOutputClass>();
+        private ServiceFactory _serviceFactory = new ServiceFactory();
+
+        private List<BaseOutputClass> Classes { get; set; } = new List<BaseOutputClass>();
+
+        private List<OutputService> Services { get; set; } = new List<OutputService>();
+
 
 
         public Generator(string source)
@@ -22,19 +29,58 @@ namespace webTemplate.Swagger
 
         public void Parse()
         {
-            ParseClasses();
-            ParseServices();
+            Classes = _classFactory.GetClasses(swaggerDoc);
+            Services = _serviceFactory.GetServices(swaggerDoc);
+
+            Files.AddRange(_serviceFactory.GenerateFiles(Services));
+            Files.AddRange(_classFactory.GenerateFiles(Classes));
         }
 
-        private void ParseClasses()
+        public void WriteFiles()
         {
-            var factory = new ClassFactory();
 
-            Classes = factory.GetClasses(swaggerDoc.Components);
+
+            foreach (var file in Files)
+            {
+                var path = "output";
+                if (file is ServiceFile)
+                {
+                    path += "/services";
+                }
+                var di = new DirectoryInfo(path);
+                if (!di.Exists)
+                {
+                    di.Create();
+                }
+                var filePath = path + "/" + file.FileName;
+                File.WriteAllText(filePath, file.Content);
+
+                //ZipArchiveEntry zipEntry = null;
+                //if (file is ClassFile)
+                //{
+                //    if (((ClassFile)file).IsEnum)
+                //    {
+                //        zipEntry = zip.CreateEntry("enums/" + file.FileName);
+                //    }
+                //    else
+                //    {
+                //        zipEntry = zip.CreateEntry("classes/" + file.FileName);
+                //    }
+                //}
+                //if (file is ServiceFile)
+                //{
+                //    zipEntry = zip.CreateEntry("services/" + file.FileName);
+                //}
+                //using (var writer = new StreamWriter(zipEntry.Open()))
+                //{
+                //    using (var stream = GenerateStreamFromString(file.Content))
+                //    {
+                //        stream.WriteTo(writer.BaseStream);
+                //    }
+                //}
+            }
         }
 
-        private void ParseServices()
-        {
-        }
+
     }
 }

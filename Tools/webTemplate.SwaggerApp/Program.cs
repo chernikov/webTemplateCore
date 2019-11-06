@@ -18,9 +18,7 @@ namespace webTemplate.SwaggerApp
 
             generator.Parse();
 
-            var files = generator.Files;
-
-
+            generator.WriteFiles();
         }
     }
 }

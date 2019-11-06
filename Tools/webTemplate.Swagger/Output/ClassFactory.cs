@@ -1,11 +1,38 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using webTemplate.Swagger.Swagger;
 
 namespace webTemplate.Swagger.Output
 {
     public class ClassFactory
     {
-        public BaseOutputClass CreateDefinition(string name, DocumentSchema schema)
+
+
+        public List<BaseOutputClass> GetClasses(Document document)
+        {
+            var list = new List<BaseOutputClass>();
+            var components = document.Components;
+            foreach (var schema in components.Schemas)
+            {
+                var entity = CreateDefinition(schema.Key, schema.Value);
+                list.Add(entity);
+            }
+            foreach (var entity in list)
+            {
+                if (entity is OutputClass)
+                {
+                    var @class = entity as OutputClass;
+                    var schema = components.Schemas[@class.Name];
+                    @class.SetProperties(this, list, schema);
+
+                    @class.SetInnerClass(this, list, schema);
+                }
+            }
+
+            return list;
+        }
+
+        private BaseOutputClass CreateDefinition(string name, DocumentSchema schema)
         {
             if (schema.Enum != null)
             {
@@ -30,30 +57,12 @@ namespace webTemplate.Swagger.Output
             }
         }
 
-        internal List<BaseOutputClass> GetClasses(DocumentComponent components)
+        public List<ClassFile> GenerateFiles(List<BaseOutputClass> classes)
         {
-            var list = new List<BaseOutputClass>();
-            foreach (var schema in components.Schemas)
-            {
-                var entity = CreateDefinition(schema.Key, schema.Value);
-                list.Add(entity);
-            }
-            foreach (var entity in list)
-            {
-                if (entity is OutputClass)
-                {
-                    var @class = entity as OutputClass;
-                    var schema = components.Schemas[@class.Name];
-                    @class.SetProperties(this, list, schema);
-
-                    @class.SetInnerClass(this, list, schema);
-                }
-            }
-
-            return list;
+            return new List<ClassFile>();
         }
 
-        public BaseOutputClass CreateDefinition(DocumentSchema schema)
+        private BaseOutputClass CreateDefinition(DocumentSchema schema)
         {
             if (schema.Enum != null)
             {
@@ -73,7 +82,7 @@ namespace webTemplate.Swagger.Output
             }
         }
 
-        public BaseOutputClass CreateDefinitionWithDeep(DocumentSchema schema, List<BaseOutputClass> list)
+        internal BaseOutputClass CreateDefinitionWithDeep(DocumentSchema schema, List<BaseOutputClass> list)
         {
             if (schema.Enum != null)
             {

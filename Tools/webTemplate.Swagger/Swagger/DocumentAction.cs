@@ -8,6 +8,8 @@ namespace webTemplate.Swagger.Swagger
 
         public List<DocumentParameter> Parameters { get; set; }
 
+        public DocumentRequestBody RequestBody { get; set; }
+
         public Dictionary<string, DocumentResponse> Responses { get; set; }
     }
 }
