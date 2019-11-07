@@ -30,7 +30,7 @@ namespace webTemplate.Swagger
         public void Parse()
         {
             Classes = _classFactory.GetClasses(swaggerDoc);
-            Services = _serviceFactory.GetServices(swaggerDoc);
+            Services = _serviceFactory.GetServices(swaggerDoc, Classes);
 
             Files.AddRange(_serviceFactory.GenerateFiles(Services));
             Files.AddRange(_classFactory.GenerateFiles(Classes));
@@ -38,14 +38,20 @@ namespace webTemplate.Swagger
 
         public void WriteFiles()
         {
-
-
             foreach (var file in Files)
             {
                 var path = "output";
                 if (file is ServiceFile)
                 {
                     path += "/services";
+                }
+                if (file is ClassFile)
+                {
+                    path += "/classes";
+                }
+                if (file is EnumFile)
+                {
+                    path += "/enums";
                 }
                 var di = new DirectoryInfo(path);
                 if (!di.Exists)

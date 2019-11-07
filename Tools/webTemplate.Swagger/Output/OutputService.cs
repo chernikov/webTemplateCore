@@ -10,7 +10,7 @@ namespace webTemplate.Swagger.Output
     {
         public string Name { get; set; }
 
-        public string Url
+        public List<PathChunk> UrlChunks
         {
             get
             {
@@ -38,8 +38,14 @@ namespace webTemplate.Swagger.Output
                         i++;
                     }
                 }
-                var url = string.Join("/", commonPart.Select(p => p.Name));
-                return url;
+                return commonPart;
+            }
+        }
+        public string Url
+        {
+            get
+            {
+                return string.Join("/", UrlChunks.Select(p => p.Name));
             }
         }
 

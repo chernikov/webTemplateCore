@@ -8,7 +8,56 @@ namespace webTemplate.Swagger.Output
 
         public string Name { get; set; }
 
+
+        //TODO: Refactor
+        public string AngularName
+        {
+            get
+            {
+                if (Name != null && Name.IndexOf("Dto") != -1)
+                {
+                    var nameProp = Name.Replace("Dto", "");
+                    return nameProp;
+                }
+                return Name;
+            }
+        }
+
         public bool IsDictionary { get; set; }
+
+        public string AngularType
+        {
+            get
+            {
+                if (Name != null)
+                {
+                    return AngularName;
+                }
+                if (IsDictionary)
+                {
+                    return $"{{ [id: string]: {InnerClass.AngularType}; }}";
+                }
+                switch (Type)
+                {
+                    case ClassTypeEnum.Array:
+                        return InnerClass.AngularType + "[]";
+                    case ClassTypeEnum.Object:
+                        return Name;
+                    case ClassTypeEnum.Byte:
+                    case ClassTypeEnum.Integer:
+                    case ClassTypeEnum.Float:
+                    case ClassTypeEnum.Double:
+                    case ClassTypeEnum.Long:
+                        return "number";
+                    case ClassTypeEnum.String:
+                    case ClassTypeEnum.DateTime:
+                        return "string";
+                    default:
+                        return $"Type: {Type}";
+                }
+
+            }
+        }
 
         public string ReferenceName
         {
@@ -31,12 +80,17 @@ namespace webTemplate.Swagger.Output
             {
                 case var t when t.type == "array":
                     Type = ClassTypeEnum.Array;
+                    if (schema.Items != null)
+                    {
+                        InnerClass = ClassFactory.GetClassDefinition(schema.Items);
+                    }
                     break;
                 case var t when t.type == "object":
                     Type = ClassTypeEnum.Object;
                     if (schema.AdditionalProperties != null)
                     {
                         IsDictionary = true;
+                        InnerClass = ClassFactory.GetClassDefinition(schema.AdditionalProperties);
                     }
                     break;
                 case var t when t.type == "integer" && t.format == "int32":

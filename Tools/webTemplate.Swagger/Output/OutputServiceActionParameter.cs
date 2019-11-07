@@ -15,6 +15,6 @@ namespace webTemplate.Swagger.Output
 
         public bool Required { get; set; }
 
-        public OutputClass Class { get; set; }
+        public BaseOutputClass Class { get; set; }
     }
 }

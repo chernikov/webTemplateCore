@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using webTemplate.Swagger.Swagger;
 
 namespace webTemplate.Swagger.Output
 {
     public class ClassFactory
     {
-
-
         public List<BaseOutputClass> GetClasses(Document document)
         {
             var list = new List<BaseOutputClass>();
@@ -34,6 +34,15 @@ namespace webTemplate.Swagger.Output
 
         private BaseOutputClass CreateDefinition(string name, DocumentSchema schema)
         {
+            if (schema.Ref != null)
+            {
+                var refName = schema.Ref.Remove("#/components/schemas/".Length);
+                var @class = new OutputClass()
+                {
+                    Name = refName
+                };
+                return @class;
+            }
             if (schema.Enum != null)
             {
                 //create enum
@@ -57,13 +66,36 @@ namespace webTemplate.Swagger.Output
             }
         }
 
-        public List<ClassFile> GenerateFiles(List<BaseOutputClass> classes)
-        {
-            return new List<ClassFile>();
-        }
 
-        private BaseOutputClass CreateDefinition(DocumentSchema schema)
+        public static BaseOutputClass GetClassDefinition(DocumentSchema schema, List<BaseOutputClass> baseOutputClasses = null)
         {
+            if (schema.Ref != null)
+            {
+                var refName = schema.Ref.Substring("#/components/schemas/".Length);
+
+                if (baseOutputClasses != null)
+                {
+                    var item = baseOutputClasses.FirstOrDefault(p => p.Name == refName);
+
+                    if (item != null)
+                    {
+                        if (item is OutputEnum)
+                        {
+                            var @enum = new OutputEnum()
+                            {
+                                Name = refName
+                            };
+                            return @enum;
+                        }
+                    }
+                }
+                var @class = new OutputClass()
+                {
+                    Name = refName
+                };
+                return @class;
+
+            }
             if (schema.Enum != null)
             {
                 //create enum
@@ -77,7 +109,6 @@ namespace webTemplate.Swagger.Output
                 //create class
                 var @class = new OutputClass() { };
                 @class.SetType(schema);
-
                 return @class;
             }
         }
@@ -86,7 +117,7 @@ namespace webTemplate.Swagger.Output
         {
             if (schema.Enum != null)
             {
-                return CreateDefinition(schema);
+                return ClassFactory.GetClassDefinition(schema);
             }
             else
             {
@@ -97,6 +128,117 @@ namespace webTemplate.Swagger.Output
                 @class.SetInnerClass(this, list, schema);
                 return @class;
             }
+        }
+
+        public List<BaseFile> GenerateFiles(List<BaseOutputClass> classes)
+        {
+            var list = new List<BaseFile>();
+            foreach (var baseClass in classes)
+            {
+                if (baseClass is OutputEnum)
+                {
+                    var @enum = baseClass as OutputEnum;
+                    list.Add(new EnumFile()
+                    {
+                        FileName = $"{@enum.Name.GetKebabName()}.enum.ts",
+                        Content = GenerateContentEnum(@enum)
+                    });
+                }
+                if (baseClass is OutputClass)
+                {
+                    var @class = baseClass as OutputClass;
+                    list.Add(new ClassFile()
+                    {
+                        FileName = $"{@class.AngularName.GetKebabName()}.class.ts",
+                        Content = GenerateContentClass(@class)
+                    });
+                }
+            }
+            return list;
+        }
+
+        private string GenerateContentEnum(OutputEnum @enum)
+        {
+            var sb = new StringBuilder();
+
+            sb.AppendLine($"export enum {@enum.Name} {{");
+            foreach (var type in @enum.Types)
+            {
+                int result = 0;
+                if (type is int || type is long)
+                {
+                    int.TryParse(type.ToString(), out result);
+                    if (result < 0)
+                    {
+                        sb.AppendLine($"\tNUMBER_MINUS_{-result} = {result}, ");
+                    }
+                    else
+                    {
+                        sb.AppendLine($"\tNUMBER_{result} = {result}, ");
+                    }
+
+                }
+                else
+                {
+                    sb.AppendLine($"\t{type.ToString()}, ");
+                }
+            }
+            sb.AppendLine($"}}");
+            return sb.ToString();
+        }
+
+        private string GenerateContentClass(OutputClass @class)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine(GetAngularAllReferenceTypes(@class));
+            sb.AppendLine($"export class {@class.AngularName} {{");
+            foreach (var type in @class.Properties)
+            {
+                sb.AppendLine($"\t{type.Name} : {type.Class.AngularType};");
+            }
+            sb.AppendLine($"}}");
+            return sb.ToString();
+        }
+
+
+        private string GetAngularAllReferenceTypes(OutputClass @class)
+        {
+            var referenceTypes = CollectAllReferenceTypes(@class);
+            var sb = new StringBuilder();
+
+            foreach (var referenceType in referenceTypes)
+            {
+                if (referenceType is OutputClass)
+                {
+                    sb.AppendLine($"import {{ {referenceType.AngularName} }} from '../classes/{referenceType.AngularName.GetKebabName()}.class';");
+                }
+                if (referenceType is OutputEnum)
+                {
+                    sb.AppendLine($"import {{ {referenceType.AngularName} }} from '../enums/{referenceType.AngularName.GetKebabName()}.enum';");
+                }
+            }
+            if (referenceTypes.Count > 0)
+            {
+                sb.AppendLine("");
+            }
+            return sb.ToString();
+        }
+
+        private List<BaseOutputClass> CollectAllReferenceTypes(OutputClass @class)
+        {
+            var referenceTypes = new List<BaseOutputClass>();
+            foreach (var property in @class.Properties)
+            {
+
+                if (property.Class.Name != null)
+                {
+                    if (!referenceTypes.Any(p => p.Name == property.Class.Name))
+                    {
+                        referenceTypes.Add(property.Class);
+                    }
+                }
+            }
+            return referenceTypes;
         }
     }
 }

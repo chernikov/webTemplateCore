@@ -4,11 +4,13 @@ import { Observable } from 'rxjs';
 
 import { map } from "rxjs/operators";
 
+import { SimpleObject } from '../classes/simple-object.class';
+
 
 @Injectable({ providedIn: "root" })
-export class IntService
+export class SimpleObjectService
 {
-	private apiUrl:string = 'api/int';
+	private apiUrl:string = 'api/simple-object';
 
 	private headers = new Headers({
 		"content-type": "application/json",
@@ -20,23 +22,23 @@ export class IntService
 
 	constructor(private http: Http) {}
 
-	getAll() : Observable<number> {
+	getAll() : Observable<SimpleObject> {
 		return this.http.get(this.apiUrl, this.options).pipe(map(res => res.json()));
 	}
 
-	post(body : number) : Observable<number> {
+	post(body : SimpleObject) : Observable<SimpleObject> {
 		return this.http.post(this.apiUrl, body, this.options).pipe(map(res => res.json()));
 	}
 
-	put(body : number) : Observable<number> {
+	put(body : SimpleObject) : Observable<SimpleObject> {
 		return this.http.put(this.apiUrl, body, this.options).pipe(map(res => res.json()));
 	}
 
-	get(id: number) : Observable<number> {
-		return this.http.get(this.apiUrl + "/" + id, this.options).pipe(map(res => res.json()));
+	get(param: string) : Observable<SimpleObject> {
+		return this.http.get(this.apiUrl + "/" + param, this.options).pipe(map(res => res.json()));
 	}
 
-	delete(id: number) : Observable<number> {
+	delete(id: number) : Observable<SimpleObject> {
 		return this.http.delete(this.apiUrl + "/" + id, this.options).pipe(map(res => res.json()));
 	}
 

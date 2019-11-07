@@ -65,7 +65,7 @@ namespace webTemplate.Swagger.Swagger
         {
             get
             {
-                return ParseJTokenWithRef(SchemaItems);
+                return SchemaItems.ParseJTokenWithRef();
             }
         }
 
@@ -81,20 +81,9 @@ namespace webTemplate.Swagger.Swagger
 
             foreach (var kv in source)
             {
-                dict.Add(kv.Key, ParseJTokenWithRef(kv.Value));
+                dict.Add(kv.Key, kv.Value.ParseJTokenWithRef());
             }
             return dict;
-        }
-
-        private DocumentSchema ParseJTokenWithRef(JToken source)
-        {
-            var @ref = (source as JObject)["$ref"]?.Value<string>();
-            return @ref == null ?
-                    JsonConvert.DeserializeObject<DocumentSchema>(source.ToString()) :
-                    new DocumentSchema()
-                    {
-                        Ref = @ref
-                    };
         }
 
         /// <summary>
@@ -112,7 +101,7 @@ namespace webTemplate.Swagger.Swagger
                 {
                     return null;
                 }
-                return ParseJTokenWithRef(SchemaAdditionalProperties);
+                return SchemaAdditionalProperties.ParseJTokenWithRef();
             }
         }
     }

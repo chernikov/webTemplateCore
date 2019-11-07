@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,6 @@ namespace webTemplate.Swagger.Swagger
 {
     public class DocumentRequestBody
     {
-        public Dictionary<string, DocumentSchema> Content { get; set; }
+        public Dictionary<string, DocumentContent> Content { get; set; }
     }
 }

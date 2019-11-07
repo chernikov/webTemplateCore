@@ -6,9 +6,9 @@ import { map } from "rxjs/operators";
 
 
 @Injectable({ providedIn: "root" })
-export class IntService
+export class StringService
 {
-	private apiUrl:string = 'api/int';
+	private apiUrl:string = 'api/string';
 
 	private headers = new Headers({
 		"content-type": "application/json",
@@ -20,24 +20,24 @@ export class IntService
 
 	constructor(private http: Http) {}
 
-	getAll() : Observable<number> {
+	getAll() : Observable<string> {
 		return this.http.get(this.apiUrl, this.options).pipe(map(res => res.json()));
 	}
 
-	post(body : number) : Observable<number> {
+	post(body : string) : Observable<string> {
 		return this.http.post(this.apiUrl, body, this.options).pipe(map(res => res.json()));
 	}
 
-	put(body : number) : Observable<number> {
+	put(body : string) : Observable<string> {
 		return this.http.put(this.apiUrl, body, this.options).pipe(map(res => res.json()));
 	}
 
-	get(id: number) : Observable<number> {
-		return this.http.get(this.apiUrl + "/" + id, this.options).pipe(map(res => res.json()));
+	get(param: string) : Observable<string> {
+		return this.http.get(this.apiUrl + "/" + param, this.options).pipe(map(res => res.json()));
 	}
 
-	delete(id: number) : Observable<number> {
-		return this.http.delete(this.apiUrl + "/" + id, this.options).pipe(map(res => res.json()));
+	delete(param: string) : Observable<string> {
+		return this.http.delete(this.apiUrl + "/" + param, this.options).pipe(map(res => res.json()));
 	}
 
 }

@@ -10,7 +10,7 @@ namespace webTemplate.Swagger.Output
 {
     public class ServiceFactory
     {
-        public List<OutputService> GetServices(Document document)
+        public List<OutputService> GetServices(Document document, List<BaseOutputClass> baseOutputClasses)
         {
             var services = new Dictionary<string, OutputService>();
 
@@ -35,9 +35,9 @@ namespace webTemplate.Swagger.Output
                     {
                         Method = OutputServiceAction.ParseMethodType(method),
                         Path = servicePath,
-                        RequestBody = OutputServiceAction.ParseRequestBody(actionValue.RequestBody),
-                        Responses = actionValue.Responses.Values?.ToList(),
-                        Parameters = OutputServiceAction.ParseParameters(actionValue.Parameters)
+                        RequestBody = OutputServiceAction.ParseRequestBody(actionValue.RequestBody, baseOutputClasses),
+                        Responses = OutputServiceAction.ParseResponses(actionValue.Responses, baseOutputClasses),
+                        Parameters = OutputServiceAction.ParseParameters(actionValue.Parameters, baseOutputClasses)
                     };
                     service.Actions.Add(outputAction);
                 }
@@ -45,7 +45,7 @@ namespace webTemplate.Swagger.Output
             return services.Values.ToList();
         }
 
-        internal List<ServiceFile> GenerateFiles(List<OutputService> services)
+        public List<ServiceFile> GenerateFiles(List<OutputService> services)
         {
             var list = new List<ServiceFile>();
             foreach (var service in services)
@@ -68,7 +68,7 @@ namespace webTemplate.Swagger.Output
             sb.AppendLine("import { Observable } from 'rxjs';");
             sb.AppendLine("");
             sb.AppendLine("import { map } from \"rxjs/operators\";");
-            sb.AppendLine("");
+            sb.AppendLine(GetAngularAllReferenceTypes(service));
             sb.AppendLine("");
             sb.AppendLine("@Injectable({ providedIn: \"root\" })");
             sb.AppendLine($"export class {service.Name}Service");
@@ -76,23 +76,117 @@ namespace webTemplate.Swagger.Output
             sb.AppendLine($"\tprivate apiUrl:string = '{service.Url}';");
             sb.AppendLine("");
             sb.AppendLine("\tprivate headers = new Headers({");
-            sb.AppendLine("\t\t\"content-type\": \"application/json\"");
+            sb.AppendLine("\t\t\"content-type\": \"application/json\",");
             sb.AppendLine("\t\t\"Accept\": \"application/json\"");
             sb.AppendLine("\t});");
+
+            sb.AppendLine("\tprivate options = new RequestOptions({");
+            sb.AppendLine("\t\theaders : this.headers");
+            sb.AppendLine("\t})");
             sb.AppendLine("");
-            sb.AppendLine("constructor(private http: Http) {}");
+            sb.AppendLine("\tconstructor(private http: Http) {}");
             sb.AppendLine("");
 
             foreach (var action in service.Actions)
             {
-                sb.AppendLine($"\t{action.AngularMethod}({action.AngularInputParameters}) : Observable<[Output]> {{");
-                sb.AppendLine($"\t\treturn this.http.{action.AngularMethod}([collect url]this.apiUrl + \"/\" + id, [if post/put set parameter], this.options).pipe(map(res => res.json()));");
+                var methodName = GetMethodName(service.Actions, action);
+
+                sb.AppendLine($"\t{methodName}({action.AngularInputParameters}) : Observable<{action.AngularOutputParameter}> {{");
+                sb.AppendLine($"\t\treturn this.http.{action.AngularMethod}({action.AngularCollectUri(service.UrlChunks)}{action.AngularRequestBody}, this.options).pipe(map(res => res.json()));");
                 sb.AppendLine("\t}");
                 sb.AppendLine("");
             }
             sb.AppendLine("}");
 
             return sb.ToString();
+        }
+
+        private string GetMethodName(List<OutputServiceAction> list, OutputServiceAction current)
+        {
+            var count = list.Count(p => p.Method == current.Method);
+            if (count == 1)
+            {
+                return current.AngularMethod;
+            }
+            if (count == 2 && current.Method == MethodTypeEnum.Get)
+            {
+                var other = list.FirstOrDefault(p => p.Method == current.Method && p.Path != current.Path);
+
+                if (current.PathChunks.Count(p => p.IsParameter) == 0 && other.PathChunks.Count(p => p.IsParameter) != 0)
+                {
+                    return "getAll";
+                }
+                if (current.PathChunks.Count(p => p.IsParameter) == 1 && other.PathChunks.Count(p => p.IsParameter) != 1)
+                {
+                    return "get";
+                }
+            }
+            return current.AngularMethod;
+        }
+
+        private string GetAngularAllReferenceTypes(OutputService service)
+        {
+            var referenceTypes = CollectAllReferenceTypes(service);
+            var sb = new StringBuilder();
+
+            if (referenceTypes.Count > 0)
+            {
+                sb.AppendLine("");
+            }
+            foreach (var referenceType in referenceTypes)
+            {
+                if (referenceType is OutputClass)
+                {
+                    sb.AppendLine($"import {{ {referenceType.AngularName} }} from '../classes/{referenceType.AngularName.GetKebabName()}.class';");
+                }
+                if (referenceType is OutputEnum)
+                {
+                    sb.AppendLine($"import {{ {referenceType.AngularName} }} from '../enums/{referenceType.AngularName.GetKebabName()}.enum';");
+                }
+            }
+            return sb.ToString();
+        }
+
+        private List<BaseOutputClass> CollectAllReferenceTypes(OutputService service)
+        {
+            var referenceTypes = new List<BaseOutputClass>();
+            foreach (var action in service.Actions)
+            {
+                foreach (var parameter in action.Parameters)
+                {
+                    if (parameter.Class.Name != null)
+                    {
+                        if (!referenceTypes.Any(p => p.Name == parameter.Class.Name))
+                        {
+                            referenceTypes.Add(parameter.Class);
+                        }
+                    }
+                }
+
+                if (action.RequestBody != null)
+                {
+                    if (action.RequestBody.Name != null)
+                    {
+                        if (!referenceTypes.Any(p => p.Name == action.RequestBody.Name))
+                        {
+                            referenceTypes.Add(action.RequestBody);
+                        }
+                    }
+                }
+
+                foreach (var response in action.Responses)
+                {
+                    if (response.Class.Name != null)
+                    {
+                        if (!referenceTypes.Any(p => p.Name == response.Class.Name))
+                        {
+                            referenceTypes.Add(response.Class);
+                        }
+                    }
+                }
+            }
+
+            return referenceTypes;
         }
     }
 }

@@ -85,5 +85,18 @@ namespace webTemplate.Swagger.Output
                 return Name;
             }
         }
+
+        public string AngularName
+        {
+            get
+            {
+                if (Name != null && Name.IndexOf("Dto") != -1)
+                {
+                    var nameProp = Name.Replace("Dto", "");
+                    return nameProp;
+                }
+                return Name;
+            }
+        }
     }
 }

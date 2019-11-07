@@ -6,9 +6,9 @@ import { map } from "rxjs/operators";
 
 
 @Injectable({ providedIn: "root" })
-export class IntService
+export class ListOfIntService
 {
-	private apiUrl:string = 'api/int';
+	private apiUrl:string = 'api/list-of-int';
 
 	private headers = new Headers({
 		"content-type": "application/json",
@@ -20,23 +20,23 @@ export class IntService
 
 	constructor(private http: Http) {}
 
-	getAll() : Observable<number> {
+	getAll() : Observable<number[]> {
 		return this.http.get(this.apiUrl, this.options).pipe(map(res => res.json()));
 	}
 
-	post(body : number) : Observable<number> {
+	post(body : number[]) : Observable<number[]> {
 		return this.http.post(this.apiUrl, body, this.options).pipe(map(res => res.json()));
 	}
 
-	put(body : number) : Observable<number> {
+	put(body : number[]) : Observable<number[]> {
 		return this.http.put(this.apiUrl, body, this.options).pipe(map(res => res.json()));
 	}
 
-	get(id: number) : Observable<number> {
+	get(id: number) : Observable<number[]> {
 		return this.http.get(this.apiUrl + "/" + id, this.options).pipe(map(res => res.json()));
 	}
 
-	delete(id: number) : Observable<number> {
+	delete(id: number) : Observable<number[]> {
 		return this.http.delete(this.apiUrl + "/" + id, this.options).pipe(map(res => res.json()));
 	}
 

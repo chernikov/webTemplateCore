@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace webTemplate.Swagger.Output
 {
-    public class OutputSchema
+    public class OutputResponse
     {
-        
+        public int Code { get; set; }
+
+        public BaseOutputClass Class { get; set; }
     }
 }

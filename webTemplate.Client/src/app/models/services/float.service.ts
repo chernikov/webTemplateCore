@@ -6,9 +6,9 @@ import { map } from "rxjs/operators";
 
 
 @Injectable({ providedIn: "root" })
-export class IntService
+export class FloatService
 {
-	private apiUrl:string = 'api/int';
+	private apiUrl:string = 'api/float';
 
 	private headers = new Headers({
 		"content-type": "application/json",

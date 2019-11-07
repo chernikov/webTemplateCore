@@ -6,6 +6,6 @@ namespace webTemplate.Swagger.Swagger
     {
         public string Description { get; set; }
 
-        public Dictionary<string, DocumentSchema> Content { get; set; }
+        public Dictionary<string, DocumentContent> Content { get; set; }
     }
 }
