@@ -26,4 +26,9 @@
     <ProjectReference Include="..\webTemplate.Domain\webTemplate.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+    <Folder Include="logs\" />
+  </ItemGroup>
+
 </Project>
