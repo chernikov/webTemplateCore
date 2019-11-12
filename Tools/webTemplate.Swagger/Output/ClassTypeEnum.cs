@@ -10,6 +10,7 @@
         Byte,
         String,
         Double,
-        Float
+        Float,
+        Boolean
     }
 }

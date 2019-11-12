@@ -39,10 +39,13 @@ namespace webTemplate.Swagger.Output
                 }
                 switch (Type)
                 {
+
                     case ClassTypeEnum.Array:
                         return InnerClass.AngularType + "[]";
                     case ClassTypeEnum.Object:
                         return Name;
+                    case ClassTypeEnum.Boolean:
+                        return "boolean";
                     case ClassTypeEnum.Byte:
                     case ClassTypeEnum.Integer:
                     case ClassTypeEnum.Float:
@@ -78,6 +81,9 @@ namespace webTemplate.Swagger.Output
             var format = schema.Format;
             switch (type, format)
             {
+                case var t when t.type == "boolean":
+                    Type = ClassTypeEnum.Boolean;
+                    break;
                 case var t when t.type == "array":
                     Type = ClassTypeEnum.Array;
                     if (schema.Items != null)
@@ -115,7 +121,6 @@ namespace webTemplate.Swagger.Output
                     Type = ClassTypeEnum.Float;
                     break;
             }
-
         }
     }
 }
