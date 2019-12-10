@@ -196,10 +196,26 @@ namespace webTemplate.Swagger.Output
             {
                 sb.AppendLine($"\t{type.Name} : {type.Class.AngularType};");
             }
+            sb.AppendLine($"");
+
+            sb.AppendLine(GenerateConstructor(@class));
+
+            sb.AppendLine($"");
             sb.AppendLine($"}}");
             return sb.ToString();
         }
 
+        private string GenerateConstructor(OutputClass @class)
+        {
+            var sb = new StringBuilder();
+            sb.AppendLine("\tconstructor() {");
+            foreach (var type in @class.Properties)
+            {
+                sb.AppendLine($"\t\tthis.{type.Name} = {type.Class.DefaultValue};");
+            }
+            sb.AppendLine("\t}");
+            return sb.ToString();
+        }
 
         private string GetAngularAllReferenceTypes(OutputClass @class)
         {
@@ -210,7 +226,7 @@ namespace webTemplate.Swagger.Output
             {
                 if (referenceType is OutputClass)
                 {
-                    sb.AppendLine($"import {{ {referenceType.AngularName} }} from '../classes/{referenceType.AngularName.GetKebabName()}.class';");
+                    sb.AppendLine($"import {{ {referenceType.AngularName} }} from './{referenceType.AngularName.GetKebabName()}.class';");
                 }
                 if (referenceType is OutputEnum)
                 {
@@ -229,16 +245,29 @@ namespace webTemplate.Swagger.Output
             var referenceTypes = new List<BaseOutputClass>();
             foreach (var property in @class.Properties)
             {
-
-                if (property.Class.Name != null)
+                var referenceClass = GetReferenceClass(property.Class);
+                if (referenceClass != null)
                 {
-                    if (!referenceTypes.Any(p => p.Name == property.Class.Name))
+                    if (!referenceTypes.Any(p => p.Name == referenceClass.Name))
                     {
-                        referenceTypes.Add(property.Class);
+                        referenceTypes.Add(referenceClass);
                     }
                 }
             }
             return referenceTypes;
+        }
+
+        public BaseOutputClass GetReferenceClass(BaseOutputClass input)
+        {
+            if (input.Name != null)
+            {
+                return input;
+            }
+            if (input.InnerClass != null && input.InnerClass.Name != null)
+            {
+                return input.InnerClass;
+            }
+            return null;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace webTemplate.Swagger.Output
 {
     public class OutputServiceAction
     {
-        private Regex RegexPathParameter = new Regex("{(.*)}");
+        private readonly Regex RegexPathParameter = new Regex("{(.*)}");
 
         public string Path { get; set; }
 
@@ -128,7 +128,7 @@ namespace webTemplate.Swagger.Output
                 {
                     return response200.Class.AngularType;
                 }
-                return "";
+                return "null";
             }
         }
 
@@ -201,13 +201,16 @@ namespace webTemplate.Swagger.Output
 
             foreach (var response in responses)
             {
-                var schema = response.Value.Content["application/json"].Schema;
-                var item = new OutputResponse()
+                if (response.Value.Content != null)
                 {
-                    Code = Int32.Parse(response.Key),
-                    Class = ClassFactory.GetClassDefinition(schema, baseOutputClasses)
-                };
-                list.Add(item);
+                    var schema = response.Value.Content["application/json"].Schema;
+                    var item = new OutputResponse()
+                    {
+                        Code = Int32.Parse(response.Key),
+                        Class = ClassFactory.GetClassDefinition(schema, baseOutputClasses)
+                    };
+                    list.Add(item);
+                }
             }
 
             return list;

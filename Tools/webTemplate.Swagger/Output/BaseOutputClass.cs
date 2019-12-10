@@ -62,6 +62,40 @@ namespace webTemplate.Swagger.Output
             }
         }
 
+        public string DefaultValue
+        {
+            get
+            {
+                if (Name != null)
+                {
+                    return "null";
+                }
+                if (IsDictionary)
+                {
+                    return "null";
+                }
+                switch (Type)
+                {
+                    case ClassTypeEnum.Array:
+                        return "[]";
+                    case ClassTypeEnum.Object:
+                        return "null";
+                    case ClassTypeEnum.Boolean:
+                        return "false";
+                    case ClassTypeEnum.Byte:
+                    case ClassTypeEnum.Integer:
+                    case ClassTypeEnum.Float:
+                    case ClassTypeEnum.Double:
+                    case ClassTypeEnum.Long:
+                        return "0";
+                    case ClassTypeEnum.String:
+                    case ClassTypeEnum.DateTime:
+                        return "''";
+                    default:
+                        return "null";
+                }
+            }
+        }
         public string ReferenceName
         {
             get
@@ -121,6 +155,7 @@ namespace webTemplate.Swagger.Output
                     Type = ClassTypeEnum.Float;
                     break;
             }
+
         }
     }
 }

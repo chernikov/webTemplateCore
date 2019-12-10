@@ -63,11 +63,12 @@ namespace webTemplate.Swagger.Output
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine("import { Http, Headers, RequestOptions } from '@angular/http';");
+            sb.AppendLine("import { HttpClient, HttpHeaders } from '@angular/common/http';");
             sb.AppendLine("import { Injectable } from '@angular/core';");
             sb.AppendLine("import { Observable } from 'rxjs';");
+            //sb.AppendLine("");
+            //sb.AppendLine("import { map } from \"rxjs/operators\";");
             sb.AppendLine("");
-            sb.AppendLine("import { map } from \"rxjs/operators\";");
             sb.AppendLine(GetAngularAllReferenceTypes(service));
             sb.AppendLine("");
             sb.AppendLine("@Injectable({ providedIn: \"root\" })");
@@ -75,16 +76,16 @@ namespace webTemplate.Swagger.Output
             sb.AppendLine("{");
             sb.AppendLine($"\tprivate apiUrl:string = '{service.Url}';");
             sb.AppendLine("");
-            sb.AppendLine("\tprivate headers = new Headers({");
+            sb.AppendLine("\tprivate headers = new HttpHeaders({");
             sb.AppendLine("\t\t\"content-type\": \"application/json\",");
             sb.AppendLine("\t\t\"Accept\": \"application/json\"");
             sb.AppendLine("\t});");
 
-            sb.AppendLine("\tprivate options = new RequestOptions({");
+            sb.AppendLine("\tprivate options = {");
             sb.AppendLine("\t\theaders : this.headers");
-            sb.AppendLine("\t})");
+            sb.AppendLine("\t};");
             sb.AppendLine("");
-            sb.AppendLine("\tconstructor(private http: Http) {}");
+            sb.AppendLine("\tconstructor(private http: HttpClient) {}");
             sb.AppendLine("");
 
             foreach (var action in service.Actions)
@@ -92,7 +93,7 @@ namespace webTemplate.Swagger.Output
                 var methodName = GetMethodName(service.Actions, action);
 
                 sb.AppendLine($"\t{methodName}({action.AngularInputParameters}) : Observable<{action.AngularOutputParameter}> {{");
-                sb.AppendLine($"\t\treturn this.http.{action.AngularMethod}({action.AngularCollectUri(service.UrlChunks)}{action.AngularRequestBody}, this.options).pipe(map(res => res.json()));");
+                sb.AppendLine($"\t\treturn this.http.{action.AngularMethod}<{action.AngularOutputParameter}>({action.AngularCollectUri(service.UrlChunks)}{action.AngularRequestBody}, this.options).pipe();");
                 sb.AppendLine("\t}");
                 sb.AppendLine("");
             }
@@ -154,39 +155,55 @@ namespace webTemplate.Swagger.Output
             {
                 foreach (var parameter in action.Parameters)
                 {
-                    if (parameter.Class.Name != null)
+                    var @class = GetReferenceClass(parameter.Class);
+                    if (@class != null)
                     {
-                        if (!referenceTypes.Any(p => p.Name == parameter.Class.Name))
+                        if (!referenceTypes.Any(p => p.Name == @class.Name))
                         {
-                            referenceTypes.Add(parameter.Class);
+                            referenceTypes.Add(@class);
                         }
                     }
                 }
 
                 if (action.RequestBody != null)
                 {
-                    if (action.RequestBody.Name != null)
+                    var @class = GetReferenceClass(action.RequestBody);
+                    if (@class != null)
                     {
-                        if (!referenceTypes.Any(p => p.Name == action.RequestBody.Name))
+                        if (!referenceTypes.Any(p => p.Name == @class.Name))
                         {
-                            referenceTypes.Add(action.RequestBody);
+                            referenceTypes.Add(@class);
                         }
                     }
                 }
 
                 foreach (var response in action.Responses)
                 {
-                    if (response.Class.Name != null)
+                    var @class = GetReferenceClass(response.Class);
+                    if (@class != null)
                     {
-                        if (!referenceTypes.Any(p => p.Name == response.Class.Name))
+                        if (!referenceTypes.Any(p => p.Name == @class.Name))
                         {
-                            referenceTypes.Add(response.Class);
+                            referenceTypes.Add(@class);
                         }
                     }
                 }
             }
 
             return referenceTypes;
+        }
+
+        public BaseOutputClass GetReferenceClass(BaseOutputClass input)
+        {
+            if (input.Name != null)
+            {
+                return input;
+            }
+            if (input.InnerClass != null && input.InnerClass.Name != null)
+            {
+                return input.InnerClass;
+            }
+            return null;
         }
     }
 }
