@@ -11,9 +11,9 @@ namespace webTemplate.Data
 
         static WebTemplateDbContext()
         {
-            DbContextLoggerFactory = new LoggerFactory();
-            DbContextLoggerFactory.AddConsole();
-            DbContextLoggerFactory.AddNLog();
+            //DbContextLoggerFactory = new LoggerFactory();
+            //DbContextLoggerFactory.AddConsole();
+            //DbContextLoggerFactory.AddNLog();
         }
 
         public WebTemplateDbContext(DbContextOptions options) : base(options)
