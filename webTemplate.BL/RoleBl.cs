@@ -12,9 +12,9 @@ namespace webTemplate.BL
     {
         private readonly IRoleRepository roleRepository;
 
-        public RoleBL(IRoleRepository courseRepository)
+        public RoleBL(IRoleRepository roleRepository)
         {
-            this.roleRepository = courseRepository;
+            this.roleRepository = roleRepository;
         }
 
         public IList<Role> GetList()

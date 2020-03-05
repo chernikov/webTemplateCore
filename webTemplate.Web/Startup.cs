@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
@@ -71,7 +72,7 @@ namespace webTemplate.Web
 
             var configurationSection = Configuration.GetSection("ConnectionStrings:DefaultConnection");
             services.AddDbContext<WebTemplateDbContext>(options => options.UseSqlServer(configurationSection.Value));
-            services.AddTransient<IWebTemplateDbContext, WebTemplateDbContext>();
+            services.AddScoped<IWebTemplateDbContext, WebTemplateDbContext>();
             services.AddScoped(provider =>
                     new Func<IWebTemplateDbContext>(() => provider.GetService<IWebTemplateDbContext>())
                 );
@@ -86,7 +87,11 @@ namespace webTemplate.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            app.UseDeveloperExceptionPage();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
             app.UseRequestLog();
 
             app.UseRouting();

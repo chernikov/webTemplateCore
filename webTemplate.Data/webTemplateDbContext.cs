@@ -9,12 +9,12 @@ namespace webTemplate.Data
     {
         public static readonly ILoggerFactory DbContextLoggerFactory;
 
-        static WebTemplateDbContext()
-        {
-            //DbContextLoggerFactory = new LoggerFactory();
-            //DbContextLoggerFactory.AddConsole();
-            //DbContextLoggerFactory.AddNLog();
-        }
+        //static WebTemplateDbContext()
+        //{
+        //    //DbContextLoggerFactory = new LoggerFactory();
+        //    //DbContextLoggerFactory.AddConsole();
+        //    //DbContextLoggerFactory.AddNLog();
+        //}
 
         public WebTemplateDbContext(DbContextOptions options) : base(options)
         {
@@ -29,9 +29,9 @@ namespace webTemplate.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            options.UseSqlServer("Server=(local);Initial Catalog=webTemplate;Trusted_Connection=True;MultipleActiveResultSets=true");
-            options.UseLoggerFactory(DbContextLoggerFactory);
-            options.EnableSensitiveDataLogging(true);
+            //options.UseSqlServer("Server=(local);Initial Catalog=webTemplate;Trusted_Connection=True;MultipleActiveResultSets=true");
+            //options.UseLoggerFactory(DbContextLoggerFactory);
+            //options.EnableSensitiveDataLogging(true);
             base.OnConfiguring(options);
         }
 

@@ -9,6 +9,6 @@ namespace webTemplate.Web.Api
 {
     public class BaseController : Controller
     {
-        
+
     }
 }

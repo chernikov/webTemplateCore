@@ -1,0 +1,9 @@
+{
+	"ConnectionStrings": {
+		"DefaultConnection": "Server=(local);Initial Catalog=webTemplate;Trusted_Connection=True;MultipleActiveResultSets=true"
+	},
+	"AppSettings": {
+		"Secret": "PPxp6DCDd4awxsSUzGwR23weAg44W2fBHCQ8gZhSnKwCX7HD8eTMjZCSac4ZEr4fEcqk4hEEyAkz7rMAtCkrv67ghYmQd93dqGyB"
+	},
+	"AllowedHosts": "*"
+}
